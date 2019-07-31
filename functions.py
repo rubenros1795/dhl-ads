@@ -75,8 +75,10 @@ def ExtractQual(string, qual_words):
 
     s_unigrams = s
     s_bigrams = ["_".join(list(i)) for i in ngrams(s, 2)]
+    s_trigrams = ["_".join(list(i)) for i in ngrams(s, 3)]
+    s_fourgrams = ["_".join(list(i)) for i in ngrams(s, 4)]
 
-    uni_bi= s_unigrams + s_bigrams
+    uni_bi= s_unigrams + s_bigrams + s_trigrams + s_fourgrams
 
     if any(x in uni_bi for x in list_qualitative_wage_indicators):
 
@@ -84,10 +86,17 @@ def ExtractQual(string, qual_words):
 
         if len(qualitative_wage) > 0:
             loon = [loon for loon in list(set(qualitative_wage))]
+            loon = " ".join(loon)
+            loon = loon.replace("_"," ")
+            if loon is None:
+                loon = "na"
             return loon
 
+        else:
+            loon = "na"
+            return loon
     else:
-        loon = 'na'
+        loon = "na"
         return loon
 
 ## Extract Numbers
@@ -121,21 +130,26 @@ def NumberCandidateClass(string, index, number_candidate):
     if len(number_candidate) > 4:
         score += -1
         weights += 1
+        features.append('n1')
     if number_candidate[0:2] == "18" and len(number_candidate) == 4:
         score += -1
         weights += 1
+        features.append('n2')
     try:
         for n in [-3,-2,-1,1,2,3,4]:
             if string[index+n] in ['januari', 'februari', 'februarij', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']:
                 score += -1
                 weights += 1
+                features.append('n3')
     except IndexError:
         pass
 
     try:
-        if string[index+2][0:2] == "18":
-            score += -1
-            weights += 1
+        for n in [1,2,3,4]:
+            if string[index+n][0:2] == "18" and len(string[index+n]) == 4:
+                score += -1
+                weights += 1
+                features.append('n4')
     except IndexError:
         pass
 
@@ -143,24 +157,37 @@ def NumberCandidateClass(string, index, number_candidate):
     if string[index-1] == "f" or string[index-1] == 'ƒ':
         score += 1
         weights += 1
+        features.append('p1')
     if number_candidate[0] == "f" or number_candidate[0] == 'ƒ':
         score += 1
         weights += 1
+        features.append('p2')
     if string[index-1] == "van":
         score += 1
         weights += 1
-
+        features.append('p3')
+    if string[index-1] == "Æ’" or string[index-1] == 'Æ’':
+        score += 1
+        weights += 1
+        features.append('p4')
+    if number_candidate[0:2] == "Æ’" or number_candidate[0] == 'Æ':
+        score += 1
+        weights += 1
+        features.append('p5')
     try:
         if string[index+1] == "gulden" or string[index+2] == "gulden":
             score += 2
             weights += 1
+            features.append('p6')
     except IndexError:
         pass
 
     try:
-        if string[index-1] in ['loon', 'salaris','beloning','jaarwedde', 'provisie'] or string[index-2] in ['loon', 'salaris','beloning','jaarwedde', 'provisie']:
-            score += 2
-            weights += 1
+        for n in [1,2,3,4]:
+            if string[index-n] in ['loon', 'salaris','beloning','jaarwedde', 'provisie'] or string[index-n] in ['loon', 'salaris','beloning','jaarwedde', 'provisie']:
+                score += 2
+                weights += 1
+                features.append('p7')
     except IndexError:
         pass
 
@@ -168,6 +195,7 @@ def NumberCandidateClass(string, index, number_candidate):
         if string[index-1] == 'tegen' or string[index-2] == 'tegen':
             score += 1
             weights += 1
+            features.append('p7')
     except IndexError:
         pass
 
@@ -175,6 +203,7 @@ def NumberCandidateClass(string, index, number_candidate):
         if string[index+1] == "per" or string[index+2] == "per":
             weights += 1
             score += 1
+            features.append('p8')
     except IndexError:
         pass
 
@@ -182,13 +211,24 @@ def NumberCandidateClass(string, index, number_candidate):
         if string[index+1] == "ongeveer":
             score += 1
             weights += 1
+            features.append('p9')
     except IndexError:
         pass
 
     try:
-        if string[index+1] in ['loon', 'salaris','beloning','jaarwedde'] or string[index+2] in ['loon', 'salaris','beloning','jaarwedde']:
-            score += 2
+        if "jaar" in string[index+1]:
+            score += 1
             weights += 1
+            features.append('p10')
+    except IndexError:
+        pass
+
+    try:
+        for n in [-4,-3,-2,-1,1,2,3,4]:
+            if string[index+n] in ['loon', 'salaris','beloning','jaarwedde']:
+                score += 1
+                weights += 1
+                features.append('p1')
     except IndexError:
         pass
 
@@ -222,7 +262,7 @@ def NonNumbClass(string):
 
             try:
                 if "o" in s[f_index + 1]:
-                        candidates.append(" ".join(s[f_index:f_index + 1]))
+                    candidates.append(" ".join(s[f_index:f_index + 1]))
             except IndexError:
                 pass
     if len(candidates) == 0:

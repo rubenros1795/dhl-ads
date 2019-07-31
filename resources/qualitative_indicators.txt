@@ -1,7 +1,6 @@
 hoog_loon
 goed_loon
 goed_salaris
-naar_bekwaamheid
 behoorlijk_salaris
 behoorlyk_salaris
 goed_salaris
@@ -19,9 +18,17 @@ voldoend_salaris
 billijk_loon
 redelijk_loon
 behoorlijk_loon
-naar_bekwaamheden
 flinke_beloning
 flinke_provisie
 vast_salaris
 billijk_salaris
 zonder_salaris
+loon_naar_bekwaamheid
+nader_te_bepalen
+aannemelijke_voorwaarden
+zonder_salaris
+loon_naar_bekwaamheden
+salaris_naar_bekwaamheden
+welk_salaris_men_verlangt
+naar_bekwaamheid
+naar_bekwaamheden

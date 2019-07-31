@@ -171,3 +171,5 @@ baron
 heer
 eigenaar
 secretarie
+baas
+rentmeester
