@@ -1,1 +1,1 @@
-## Mining Jod Advertisements in 19th Century Newspapers
+## Mining Job Advertisements in 19th Century Newspapers
